@@ -66,7 +66,7 @@ with tf.Graph().as_default():
                         if xmin <= 0 or ymin <= 0 or xmax >= len(frame[0]) or ymax >= len(frame):
                             print('Face is very close!')
                             continue
-                        cropped.append(frame[ymin:ymax, xmin:xmax,:])
+                        cropped.append(frame[ymin:ymax, xmin:xmax, :])
                         cropped[i] = facenet.flip(cropped[i], False)
                         scaled.append(np.array(Image.fromarray(cropped[i]).resize((image_size, image_size))))
                         scaled[i] = cv2.resize(scaled[i], (input_image_size,input_image_size), interpolation=cv2.INTER_CUBIC)
@@ -96,8 +96,8 @@ with tf.Graph().as_default():
                        
             endtimer = time.time()
             fps = 1/(endtimer - timer)
-            cv2.rectangle(frame, (15, 30), (135, 60),(0, 255, 255),-1)
-            cv2.putText(frame, "fps: {:.2f}".format(fps), (20, 50),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
+            cv2.rectangle(frame, (15, 30), (135, 60), (0, 255, 255),-1)
+            cv2.putText(frame, "fps: {:.2f}".format(fps), (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
             cv2.imshow('Face Recognition', frame)
             key= cv2.waitKey(1)
             if key == 113: # "q"
