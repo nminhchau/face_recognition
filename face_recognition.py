@@ -10,21 +10,21 @@ import time
 import pickle
 from PIL import Image
 import tensorflow.compat.v1 as tf
-video= 0
+video = 0
 modeldir = './model/20180402-114759.pb'
 classifier_filename = './class/classifier.pkl'
-npy='./npy'
-train_img="./train_img"
+npy ='./npy'
+train_img ="./train_img"
 with tf.Graph().as_default():
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.6)
     sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
     with sess.as_default():
         pnet, rnet, onet = detect_face.create_mtcnn(sess, npy)
         minsize = 30  # minimum size of face
-        threshold = [0.7,0.8,0.8]  # three steps's threshold
+        threshold = [0.7, 0.8, 0.8]  # three steps's threshold
         factor = 0.709  # scale factor
         margin = 44
-        batch_size =100 #1000
+        batch_size = 100 #1000
         image_size = 182
         input_image_size = 160
         HumanNames = os.listdir(train_img)
@@ -43,7 +43,7 @@ with tf.Graph().as_default():
         print('Start Recognition')
         while True:
             ret, frame = video_capture.read()
-            #frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)    #resize frame (optional)
+            frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)    #resize frame (optional)
             timer =time.time()
             if frame.ndim == 2:
                 frame = facenet.to_rgb(frame)
@@ -69,8 +69,7 @@ with tf.Graph().as_default():
                         cropped.append(frame[ymin:ymax, xmin:xmax,:])
                         cropped[i] = facenet.flip(cropped[i], False)
                         scaled.append(np.array(Image.fromarray(cropped[i]).resize((image_size, image_size))))
-                        scaled[i] = cv2.resize(scaled[i], (input_image_size,input_image_size),
-                                                interpolation=cv2.INTER_CUBIC)
+                        scaled[i] = cv2.resize(scaled[i], (input_image_size,input_image_size), interpolation=cv2.INTER_CUBIC)
                         scaled[i] = facenet.prewhiten(scaled[i])
                         scaled_reshape.append(scaled[i].reshape(-1, input_image_size, input_image_size, 3))
                         feed_dict = {images_placeholder: scaled_reshape[i], phase_train_placeholder: False}
@@ -78,28 +77,26 @@ with tf.Graph().as_default():
                         predictions = model.predict_proba(emb_array)
                         best_class_indices = np.argmax(predictions, axis=1)
                         best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
-                        if best_class_probabilities>0.87:
+                        if best_class_probabilities > 0.85:
                             cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)    #boxing face
                             for H_i in HumanNames:
                                 if HumanNames[best_class_indices[0]] == H_i:
                                     result_names = HumanNames[best_class_indices[0]]
-                                    print("Predictions : [ name: {} , accuracy: {:.3f} ]".format(HumanNames[best_class_indices[0]],best_class_probabilities[0]))
-                                    cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 255,255), -1)
-                                    cv2.putText(frame, result_names, (xmin,ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL,
-                                                1, (0, 0, 0), thickness=1, lineType=1)
+                                    print("Predictions: [name: {}, accuracy: {:.3f}]".format(HumanNames[best_class_indices[0]],best_class_probabilities[0]))
+                                    cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 255, 255), -1)
+                                    cv2.putText(frame, result_names, (xmin, ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)
                                     
                         else :
-                            cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
-                            cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 255,255), -1)
-                            cv2.putText(frame, "?", (xmin,ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL,
-                                                1, (0, 0, 0), thickness=1, lineType=1)
+                            cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 0, 255), 2)
+                            cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 0, 255), -1)
+                            cv2.putText(frame, "Unkown", (xmin, ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)
                     except:   
                         
                         print("error")
                        
             endtimer = time.time()
             fps = 1/(endtimer - timer)
-            cv2.rectangle(frame,(15,30),(135,60),(0,255,255),-1)
+            cv2.rectangle(frame, (15, 30), (135, 60),(0, 255, 255),-1)
             cv2.putText(frame, "fps: {:.2f}".format(fps), (20, 50),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
             cv2.imshow('Face Recognition', frame)
             key= cv2.waitKey(1)
