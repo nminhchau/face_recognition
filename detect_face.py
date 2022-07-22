@@ -1,5 +1,4 @@
 from six import string_types, iteritems
-
 import numpy as np
 import tensorflow.compat.v1 as tf
 import cv2

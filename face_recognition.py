@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 import cv2
 import numpy as np
 import facenet
@@ -41,10 +38,12 @@ with tf.Graph().as_default():
         
         video_capture = cv2.VideoCapture(video)
         print('[INFO] Start recognition...')
+
         while True:
             ret, frame = video_capture.read()
             frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)    #resize frame (optional)
             timer = time.time()
+
             if frame.ndim == 2:
                 frame = facenet.to_rgb(frame)
             bounding_boxes, _ = detect_face.detect_face(frame, minsize, pnet, rnet, onet, threshold, factor)
