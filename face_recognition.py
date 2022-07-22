@@ -29,7 +29,7 @@ with tf.Graph().as_default():
         input_image_size = 160
         HumanNames = os.listdir(train_img)
         HumanNames.sort()
-        print('Loading Model')
+        print('[INFO] Loading model...')
         facenet.load_model(modeldir)
         images_placeholder = tf.get_default_graph().get_tensor_by_name("input:0")
         embeddings = tf.get_default_graph().get_tensor_by_name("embeddings:0")
@@ -40,11 +40,11 @@ with tf.Graph().as_default():
             (model, class_names) = pickle.load(infile,encoding='latin1')
         
         video_capture = cv2.VideoCapture(video)
-        print('Start Recognition')
+        print('[INFO] Start recognition...')
         while True:
             ret, frame = video_capture.read()
             frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)    #resize frame (optional)
-            timer =time.time()
+            timer = time.time()
             if frame.ndim == 2:
                 frame = facenet.to_rgb(frame)
             bounding_boxes, _ = detect_face.detect_face(frame, minsize, pnet, rnet, onet, threshold, factor)
@@ -90,14 +90,13 @@ with tf.Graph().as_default():
                             cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 0, 255), 2)
                             cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 0, 255), -1)
                             cv2.putText(frame, "Unkown", (xmin, ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)
-                    except:   
-                        
+                    except:     
                         print("error")
                        
             endtimer = time.time()
             fps = 1/(endtimer - timer)
             cv2.rectangle(frame, (15, 30), (135, 60), (0, 255, 255),-1)
-            cv2.putText(frame, "fps: {:.2f}".format(fps), (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
+            cv2.putText(frame, "FPS: {:.2f}".format(fps), (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
             cv2.imshow('Face Recognition', frame)
             key= cv2.waitKey(1)
             if key == 113: # "q"
