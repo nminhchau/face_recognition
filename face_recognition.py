@@ -95,7 +95,7 @@ with tf.Graph().as_default():
                        
             endtimer = time.time()
             fps = 1/(endtimer - timer)
-            cv2.rectangle(frame, (15, 30), (135, 60), (0, 255, 255),-1)
+            cv2.rectangle(frame, (15, 30), (135, 60), (0, 255, 255), -1)
             cv2.putText(frame, "FPS: {:.2f}".format(fps), (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
             cv2.imshow('Face Recognition', frame)
             key= cv2.waitKey(1)
