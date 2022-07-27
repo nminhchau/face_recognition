@@ -16,10 +16,12 @@ print("Connect from ", str(addr))
 
 def sendDataFromClient():
     c.send(b"1")
+    buffer = c.recv(1024)
+    print(str(buffer))
     sleep(1)
 
-
-#server sử dụng kết nối gửi dữ liệu tới client dưới dạng binary
-# while True:
-#     c.send(b"Hello, how are you")
-#     sleep(1)
+def falseCase():
+    c.send(b"0")
+    buffer = c.recv(1024)
+    print(str(buffer))
+    sleep(1)

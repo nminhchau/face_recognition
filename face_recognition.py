@@ -66,6 +66,7 @@ with tf.Graph().as_default():
                         # inner exception
                         if xmin <= 0 or ymin <= 0 or xmax >= len(frame[0]) or ymax >= len(frame):
                             print('Face is very close!')
+                            server.falseCase()
                             continue
                         cropped.append(frame[ymin:ymax, xmin:xmax, :])
                         cropped[i] = facenet.flip(cropped[i], False)
@@ -78,20 +79,20 @@ with tf.Graph().as_default():
                         predictions = model.predict_proba(emb_array)
                         best_class_indices = np.argmax(predictions, axis=1)
                         best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
-                        if best_class_probabilities > 0.85:
+                        if best_class_probabilities > 0.85:                                  
                             cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)    #boxing face
                             for H_i in HumanNames:
                                 if HumanNames[best_class_indices[0]] == H_i:
                                     result_names = HumanNames[best_class_indices[0]]
                                     print("Predictions: [name: {}, accuracy: {:.3f}]".format(HumanNames[best_class_indices[0]],best_class_probabilities[0]))
                                     cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 255, 255), -1)
-                                    cv2.putText(frame, result_names, (xmin, ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)
+                                    cv2.putText(frame, result_names, (xmin, ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)                                 
                                     server.sendDataFromClient()
-                                    
-                        else :
+                        else:
                             cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 0, 255), 2)
                             cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 0, 255), -1)
                             cv2.putText(frame, "Unkown", (xmin, ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)
+                            server.falseCase()
                     except:     
                         print("error")
                        
