@@ -3,7 +3,7 @@ from time import sleep
 
 # Định nghĩa host và port mà server sẽ chạy và lắng nghe
 host = '192.168.1.67'
-port = 8000
+port = 8080
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((host, port))
 
@@ -15,13 +15,11 @@ print("Connect from ", str(addr))
 
 
 def sendDataFromClient():
-    c.send(b"1")
+    c.send(b"Welcome!")
     buffer = c.recv(1024)
     print(str(buffer))
-    sleep(1)
 
 def falseCase():
-    c.send(b"0")
+    c.send(b"Sorry!")
     buffer = c.recv(1024)
     print(str(buffer))
-    sleep(1)
