@@ -8,6 +8,7 @@ import pickle
 from PIL import Image
 import tensorflow.compat.v1 as tf
 import server
+import threading
 
 video = 0
 modeldir = './model/20180402-114759.pb'
@@ -36,7 +37,7 @@ with tf.Graph().as_default():
         embedding_size = embeddings.get_shape()[1]
         classifier_filename_exp = os.path.expanduser(classifier_filename)
         with open(classifier_filename_exp, 'rb') as infile:
-            (model, class_names) = pickle.load(infile,encoding='latin1')
+            (model, class_names) = pickle.load(infile, encoding='latin1')
         
         video_capture = cv2.VideoCapture(video)
         print('[INFO] Start recognition...')
@@ -66,7 +67,6 @@ with tf.Graph().as_default():
                         # inner exception
                         if xmin <= 0 or ymin <= 0 or xmax >= len(frame[0]) or ymax >= len(frame):
                             print('Face is very close!')
-                            server.falseCase()
                             continue
                         cropped.append(frame[ymin:ymax, xmin:xmax, :])
                         cropped[i] = facenet.flip(cropped[i], False)
@@ -87,12 +87,14 @@ with tf.Graph().as_default():
                                     print("Predictions: [name: {}, accuracy: {:.3f}]".format(HumanNames[best_class_indices[0]],best_class_probabilities[0]))
                                     cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 255, 255), -1)
                                     cv2.putText(frame, result_names, (xmin, ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)                                 
-                                    server.sendDataFromClient()
+                                    thread1 = threading.Thread(target=server.sendDataFromClient("Welcome!"))
+                                    # server.sendDataFromClient()
                         else:
                             cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 0, 255), 2)
                             cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 0, 255), -1)
                             cv2.putText(frame, "Unkown", (xmin, ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)
-                            server.falseCase()
+                            thread2 = threading.Thread(target=server.sendDataFromClient("Sorry!"))
+
                     except:     
                         print("error")
                        
