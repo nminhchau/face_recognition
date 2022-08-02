@@ -88,12 +88,13 @@ with tf.Graph().as_default():
                                     cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 255, 255), -1)
                                     cv2.putText(frame, result_names, (xmin, ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)                                 
                                     thread1 = threading.Thread(target=server.sendDataFromClient("Welcome!"))
-                                    # server.sendDataFromClient()
+                                    thread1.start()
                         else:
                             cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 0, 255), 2)
                             cv2.rectangle(frame, (xmin, ymin-20), (xmax, ymin-2), (0, 0, 255), -1)
                             cv2.putText(frame, "Unkown", (xmin, ymin-5), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), thickness=1, lineType=1)
                             thread2 = threading.Thread(target=server.sendDataFromClient("Sorry!"))
+                            thread2.start()
 
                     except:     
                         print("error")
