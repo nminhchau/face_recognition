@@ -8,3 +8,8 @@ run data_preprocess program with python data_preprocess.py
 python train_main.py to train classifier
 # Step 3:
 python face_recognition.py
+
+
+# Note
+
+
